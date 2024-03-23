@@ -207,12 +207,12 @@ class PSUControl_Shelly(
 
                 # version check: github repository
                 type="github_release",
-                user="edekeijzer",
+                user="Triodes",
                 repo="OctoPrint-PSUControl-Shelly",
                 current=self._plugin_version,
 
                 # update method: pip w/ dependency links
-                pip="https://github.com/edekeijzer/OctoPrint-PSUControl-Shelly/archive/{target_version}.zip"
+                pip="https://github.com/Triodes/OctoPrint-PSUControl-Shelly/archive/{target_version}.zip"
             )
         )
 

@@ -10,7 +10,7 @@ plugin_version = "1.0.2"
 plugin_description = "Adds Shelly support to OctoPrint-PSUControl as a sub-plugin"
 plugin_author = "Erik de Keijzer"
 plugin_author_email = "erik.de.keijzer@gmail.com"
-plugin_url = "https://github.com/edekeijzer/OctoPrint-PSUControl-Shelly"
+plugin_url = "https://github.com/Triodes/OctoPrint-PSUControl-Shelly"
 plugin_license = "AGPLv3"
 plugin_additional_data = []
 
