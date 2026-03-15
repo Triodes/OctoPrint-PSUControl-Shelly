@@ -112,12 +112,6 @@ class PSUControl_Shelly(
                 turn = state,
                 channel = str(output),
             )
-            sensing_method = self._settings.global_get(['plugins', 'psucontrol', 'sensingMethod'])
-            sensing_plugin = self._settings.global_get(['plugins', 'psucontrol', 'sensingPlugin'])
-            if sensing_method == "PLUGIN" and sensing_plugin == "psucontrol_shelly":
-                self._logger.debug("PSUControl is using us for sensing")
-                self.transition = True
-
         else:
             url = self.config['local_address'] + '/relay/' + str(output) + '?turn=' + state
             url = url if regex.match('^http[s]*:\/\/', url) else 'http://' + url
@@ -128,7 +122,12 @@ class PSUControl_Shelly(
                 else:
                     auth = HTTPBasicAuth(self.config['username'], self.config['password'])
 
-        self.transition = True
+        sensing_method = self._settings.global_get(['plugins', 'psucontrol', 'sensingMethod'])
+        sensing_plugin = self._settings.global_get(['plugins', 'psucontrol', 'sensingPlugin'])
+        if sensing_method == "PLUGIN" and sensing_plugin == "psucontrol_shelly":
+            self._logger.debug("PSUControl is using us for sensing")
+            self.transition = True
+
         self.send(url=url, data=data, auth=auth)
 
     def turn_psu_on(self):

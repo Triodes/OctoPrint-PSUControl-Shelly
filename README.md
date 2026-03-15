@@ -27,6 +27,9 @@ The plugin can be used either with a direct connection to your Shelly or via She
 ### Both options
 If your Shelly has multiple outputs (Shelly 2, 2.5, 3EM or 4PRO) select the correct output. For Shelly 1, keep it at 0.
 
+### Next Gen Devices
+Devices starting from Gen 2 use Digest Auth instead of Basic. So tick the box if you are using a Gen 2 device or higher.
+
 ## Support
 Please check your logs first. If they do not explain your issue, open an issue in GitHub. Please set *octoprint.plugins.psucontrol* and *octoprint.plugins.psucontrol_shelly* to **DEBUG** and include the relevant logs. Feature requests are welcome as well.
 
