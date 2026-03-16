@@ -1,9 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-__author__ = "Erik de Keijzer <erik.de.keijzer@gmail.com>"
+__author__ = "Aron List <aronotmar@live.nl>"
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
-__copyright__ = "Copyright (C) 2021 Erik de Keijzer - Released under terms of the AGPLv3 License"
+__copyright__ = "Copyright (C) 2026 Aron List - Released under terms of the AGPLv3 License"
 
 import octoprint.plugin
 import requests
