@@ -40,13 +40,13 @@ class PSUControl_Shelly(
 
     def reload_settings(self):
         for k, v in self.get_settings_defaults().items():
-            if type(v) == str:
+            if type(v) is str:
                 v = self._settings.get([k])
-            elif type(v) == int:
+            elif type(v) is int:
                 v = self._settings.get_int([k])
-            elif type(v) == float:
+            elif type(v) is float:
                 v = self._settings.get_float([k])
-            elif type(v) == bool:
+            elif type(v) is bool:
                 v = self._settings.get_boolean([k])
 
             self.config[k] = v
