@@ -1,5 +1,6 @@
 # OctoPrint PSU Control - Shelly
-Adds Shelly support to OctoPrint-PSUControl as a sub-plugin
+Adds Shelly support to OctoPrint-PSUControl as a sub-plugin  
+many thanks to @edekeijzer for initially developing this plugin
 
 ## Setup
 - Install the plugin using Plugin Manager from Settings
