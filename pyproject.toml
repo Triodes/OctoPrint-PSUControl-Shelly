@@ -1,6 +1,7 @@
 [build-system]
 requires = [
-    "setuptools>=68",
+    "setuptools>=68", 
+    "wheel"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -10,31 +11,22 @@ version = "1.2.1"
 description = "Adds Shelly support to OctoPrint-PSUControl as a sub-plugin"
 authors = [
     { name = "Aron List", email = "aronotmar@live.nl" },
-    {name = "Erik de Keijzer", email = "erik.de.keijzer@gmail.com"}
+    { name = "Erik de Keijzer", email = "erik.de.keijzer@gmail.com" }
 
 ]
-requires-python = ">=3.7,<4"
-dependencies = [
-    "requests",
-]
+readme = {file = "README.md", content-type = "text/markdown"}
 dynamic = [
     "license",
 ]
 
-[project.entry-points."octoprint.plugin"]
-psucontrol_shelly = "octoprint_psucontrol_shelly"
+requires-python = ">=3.7,<4"
 
-[project.urls]
-Homepage = "https://github.com/Triodes/OctoPrint-PSUControl-Shelly"
-
-[project.optional-dependencies]
-develop = [
-    "go-task-bin",
+dependencies = [
+    "requests",
 ]
 
-[project.readme]
-file = "README.md"
-content-type = "text/markdown"
+[project.optional-dependencies]
+develop = []
 
 [tool.setuptools]
 include-package-data = true
@@ -44,3 +36,9 @@ include = [
     "octoprint_psucontrol_shelly",
     "octoprint_psucontrol_shelly.*",
 ]
+
+[project.entry-points."octoprint.plugin"]
+psucontrol_shelly = "octoprint_psucontrol_shelly"
+
+[project.urls]
+Homepage = "https://github.com/Triodes/OctoPrint-PSUControl-Shelly"
