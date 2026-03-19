@@ -1,10 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-__author__ = "Aron List <aronotmar@live.nl>"
-__license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
-__copyright__ = "Copyright (C) 2026 Aron List - Released under terms of the AGPLv3 License"
-
 import octoprint.plugin
 import requests
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
@@ -215,7 +211,6 @@ class PSUControl_Shelly(
             )
         )
 
-__plugin_name__ = "PSU Control - Shelly"
 __plugin_pythoncompat__ = ">=3,<4"
 
 def __plugin_load__():

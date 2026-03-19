@@ -1,0 +1,2 @@
+include README.md
+recursive-include octoprint_psucontrol_shelly/templates *
