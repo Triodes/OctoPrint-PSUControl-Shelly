@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "OctoPrint-PSUControl-Shelly"
-version = "1.2.1"
+version = "1.2.2"
 description = "Adds Shelly support to OctoPrint-PSUControl as a sub-plugin"
 authors = [
     { name = "Aron List", email = "aronotmar@live.nl" },
