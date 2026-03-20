@@ -211,6 +211,7 @@ class PSUControl_Shelly(
             )
         )
 
+__plugin_name__ = "PSU Control - Shelly"
 __plugin_pythoncompat__ = ">=3,<4"
 
 def __plugin_load__():
