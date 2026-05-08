@@ -3,8 +3,7 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 import requests
-from requests.auth import HTTPBasicAuth, HTTPDigestAuth
-import re as regex
+from .backends import LocalGen1Backend, LocalGen2Backend, CloudV1Backend, CloudV2Backend
 
 class PSUControl_Shelly(
     octoprint.plugin.StartupPlugin,
@@ -19,8 +18,7 @@ class PSUControl_Shelly(
 
     def get_settings_defaults(self):
         return dict(
-            use_cloud = False,
-            ng_device = False,
+            backend = 'local_gen2',
             server_address = '',
             auth_key = '',
             device_id = '',
@@ -57,11 +55,11 @@ class PSUControl_Shelly(
         self._logger.debug("Registering plugin with PSUControl")
         psucontrol_helpers['register_plugin'](self)
 
-    def send(self, url, data=None, auth=None):
+    def send(self, url, data=None, auth=None, json=None):
         response = None
         try:
-            if data:
-                response = requests.post(url, auth=auth, data=data)
+            if data or json:
+                response = requests.post(url, auth=auth, data=data, json=json)
             else:
                 response = requests.get(url, auth=auth)
         except (
@@ -87,36 +85,31 @@ class PSUControl_Shelly(
 
         return response
 
+    def _get_backend(self):
+        backend_type = self.config.get('backend')
+
+        match backend_type:
+            case 'cloud':
+                return CloudV1Backend(self)
+            case 'cloud_v2':
+                return CloudV2Backend(self)
+            case 'local_gen2':
+                return LocalGen2Backend(self)
+            case 'local_gen1':
+                return LocalGen1Backend(self)
+            case _:
+                raise ValueError(f"Unknown backend type: {backend_type}")
+
     def change_psu_state(self, state):
         if self.transition:
             # This one is mostly for the Shelly Cloud API which is rather slow.
             self._logger.info("Still in transition between sending and receiving change, not sending command.")
             return
 
-        output = self.config['output']
-
-        auth = None
-        data = None
-
-        if self.config['use_cloud']:
-            url = self.config['server_address'] + '/device/relay/control'
-            url = url if regex.match('^http[s]*:\/\/', url) else 'https://' + url
-
-            data = dict(
-                auth_key = self.config['auth_key'],
-                id = self.config['device_id'],
-                turn = state,
-                channel = str(output),
-            )
-        else:
-            url = self.config['local_address'] + '/relay/' + str(output) + '?turn=' + state
-            url = url if regex.match('^http[s]*:\/\/', url) else 'http://' + url
-
-            if self.config['enable_auth']:
-                if self.config['ng_device']:
-                    auth = HTTPDigestAuth(self.config['username'], self.config['password'])
-                else:
-                    auth = HTTPBasicAuth(self.config['username'], self.config['password'])
+        backend = self._get_backend()
+        if not backend:
+            self._logger.error("Invalid backend selected.")
+            return
 
         sensing_method = self._settings.global_get(['plugins', 'psucontrol', 'sensingMethod'])
         sensing_plugin = self._settings.global_get(['plugins', 'psucontrol', 'sensingPlugin'])
@@ -124,54 +117,24 @@ class PSUControl_Shelly(
             self._logger.debug("PSUControl is using us for sensing")
             self.transition = True
 
-        self.send(url=url, data=data, auth=auth)
+        backend.set_state(state)
 
     def turn_psu_on(self):
         self._logger.debug("Switching PSU On")
-        self.change_psu_state('on')
+        self.change_psu_state(True)
 
     def turn_psu_off(self):
         self._logger.debug("Switching PSU Off")
-        self.change_psu_state('off')
+        self.change_psu_state(False)
 
     def get_psu_state(self):
         self.transition = False
-        output = self.config['output']
-
-        auth = None
-        data = None
-
-        if self.config['use_cloud']:
-            url = self.config['server_address'] + '/device/status'
-            url = url if regex.match('^http[s]*:\/\/', url) else 'https://' + url
-
-            data = dict(
-                auth_key = self.config['auth_key'],
-                id = self.config['device_id'],
-            )
-        else:
-            url = self.config['local_address'] + '/relay/' + str(output)
-            url = url if regex.match('^http[s]*:\/\/', url) else 'http://' + url
-
-            if self.config['enable_auth']:
-                if self.config['ng_device']:
-                    auth = HTTPDigestAuth(self.config['username'], self.config['password'])
-                else:
-                    auth = HTTPBasicAuth(self.config['username'], self.config['password'])
-
-        response = self.send(url=url, data=data, auth=auth)
-        if not response:
+        backend = self._get_backend()
+        if not backend:
+            self._logger.error("Invalid backend selected.")
             return False
-        json_data = response.json()
 
-        status = None
-        try:
-            if self.config['use_cloud']:
-                status = json_data['data']['device_status']['relays'][output]['ison']
-            else:
-                status = json_data['ison']
-        except KeyError:
-            pass
+        status = backend.get_state()
 
         if status == None:
             self._logger.error("Unable to determine status. Check settings.")
@@ -184,10 +147,21 @@ class PSUControl_Shelly(
         self.reload_settings()
 
     def get_settings_version(self):
-        return 1
+        return 2
 
     def on_settings_migrate(self, target, current=None):
-        pass
+        if current is None or current < 2:
+            use_cloud = self._settings.get_boolean(['use_cloud'])
+            ng_device = self._settings.get_boolean(['ng_device'])
+
+            if use_cloud:
+                backend = 'cloud'
+            elif ng_device:
+                backend = 'local_gen2'
+            else:
+                backend = 'local_gen1'
+
+            self._settings.set(['backend'], backend)
 
     def get_template_configs(self):
         return [

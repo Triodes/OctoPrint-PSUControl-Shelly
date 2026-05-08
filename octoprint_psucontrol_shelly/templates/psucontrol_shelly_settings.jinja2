@@ -10,19 +10,24 @@
 <form class="form-horizontal">
     <h4>PSU Control - Shelly settings</h4>
     <div class="control-group">
+        <label class="control-label">Connection type</label>
         <div class="controls">
-            <label class="checkbox">
-            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol_shelly.use_cloud"> Use Shelly Cloud
-            </label>
-            <!-- ko if: settings.plugins.psucontrol_shelly.use_cloud() -->
+            <select data-bind="value: settings.plugins.psucontrol_shelly.backend">
+                <option value="local_gen1">Local Shelly Gen 1</option>
+                <option value="local_gen2">Local Shelly Gen 2+</option>
+                <option value="cloud">Shelly Cloud API</option>
+                <option value="cloud_v2">Shelly Cloud API v2.0-beta</option>
+            </select>
+            <!-- ko if: settings.plugins.psucontrol_shelly.backend() === 'cloud' || settings.plugins.psucontrol_shelly.backend() === 'cloud_v2' -->
             <span class="help-block">Connect through the Shelly Cloud service. This requires an active connection to the internet.</span>
             <!-- /ko -->
-            <!-- ko ifnot: settings.plugins.psucontrol_shelly.use_cloud() -->
+            <!-- ko if: settings.plugins.psucontrol_shelly.backend() === 'local_gen1' || settings.plugins.psucontrol_shelly.backend() === 'local_gen2' -->
             <span class="help-block">Connect directly to the Shelly device over your LAN. This requires the devices to be in the same network.</span>
             <!-- /ko -->
         </div>
     </div>
-    <!-- ko if: settings.plugins.psucontrol_shelly.use_cloud() -->
+
+    <!-- ko if: settings.plugins.psucontrol_shelly.backend() === 'cloud' || settings.plugins.psucontrol_shelly.backend() === 'cloud_v2' -->
     <div class="control-group">
         <label class="control-label">Server address</label>
         <div class="controls">
@@ -45,7 +50,8 @@
         </div>
     </div>
     <!-- /ko -->
-    <!-- ko ifnot: settings.plugins.psucontrol_shelly.use_cloud() -->
+
+    <!-- ko if: settings.plugins.psucontrol_shelly.backend() === 'local_gen1' || settings.plugins.psucontrol_shelly.backend() === 'local_gen2' -->
     <div class="control-group">
         <label class="control-label">Address</label>
         <div class="controls">
@@ -62,19 +68,6 @@
         </div>
     </div>
     <!-- ko if: settings.plugins.psucontrol_shelly.enable_auth() -->
-    <div class="control-group">
-        <div class="controls">
-            <label class="checkbox">
-            <input type="checkbox" data-bind="checked: settings.plugins.psucontrol_shelly.ng_device"> Shelly Gen2+ device
-            </label>
-            <!-- ko if: settings.plugins.psucontrol_shelly.ng_device() -->
-            <span class="help-block">Uncheck this if you are using a Shelly Gen 1 device</span>
-            <!-- /ko -->
-            <!-- ko ifnot: settings.plugins.psucontrol_shelly.ng_device() -->
-            <span class="help-block">Check this if you are using a Shelly Gen 2 device or higher.</span>
-            <!-- /ko -->
-        </div>
-    </div>
     <div class="control-group">
         <label class="control-label">Username</label>
         <div class="controls">
